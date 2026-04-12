@@ -1,1 +1,107 @@
+{# templates/index.html #}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creator Toolkit Hub - Free Tools for Creators</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-icon">🎨</span>
+                <span class="logo-text">Creator Toolkit Hub</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="/" class="active">Home</a></li>
+                <li><a href="/downloader">Downloader</a></li>
+                <li><a href="/title">Title Generator</a></li>
+                <li><a href="/hashtag">Hashtag Generator</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
 
+    <main class="container">
+        <section class="hero">
+            <h1 class="hero-title">Welcome to Creator Toolkit Hub</h1>
+            <p class="hero-subtitle">Your all-in-one solution for content creation tools</p>
+        </section>
+
+        <div class="tools-grid">
+            <div class="tool-card">
+                <div class="tool-icon">📥</div>
+                <h2 class="tool-title">Video Downloader</h2>
+                <p class="tool-description">Download videos from Instagram and Facebook. High quality, fast download.</p>
+                <div class="tool-features">
+                    <span>✓ Instagram Reels</span>
+                    <span>✓ Facebook Videos</span>
+                    <span>✓ No YouTube</span>
+                </div>
+                <a href="/downloader" class="tool-button">Try Now →</a>
+            </div>
+
+            <div class="tool-card">
+                <div class="tool-icon">🎯</div>
+                <h2 class="tool-title">YouTube Title Generator</h2>
+                <p class="tool-description">Generate viral-worthy titles that get clicks and views.</p>
+                <div class="tool-features">
+                    <span>✓ Clickbait Style</span>
+                    <span>✓ SEO Optimized</span>
+                    <span>✓ Trending Topics</span>
+                </div>
+                <a href="/title" class="tool-button">Try Now →</a>
+            </div>
+
+            <div class="tool-card">
+                <div class="tool-icon">#️⃣</div>
+                <h2 class="tool-title">Hashtag Generator</h2>
+                <p class="tool-description">Get trending hashtags to boost your reach and engagement.</p>
+                <div class="tool-features">
+                    <span>✓ Trending Tags</span>
+                    <span>✓ Category Based</span>
+                    <span>✓ Copy with One Click</span>
+                </div>
+                <a href="/hashtag" class="tool-button">Try Now →</a>
+            </div>
+        </div>
+
+        <div class="stats-section">
+            <div class="stat-item">
+                <div class="stat-number">10K+</div>
+                <div class="stat-label">Videos Downloaded</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">50K+</div>
+                <div class="stat-label">Titles Generated</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">100K+</div>
+                <div class="stat-label">Hashtags Created</div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>Free Creator Tools | Made for content creators</p>
+        <p class="footer-note">© 2024 Creator Toolkit Hub - All tools are free to use</p>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        const hamburger = document.querySelector('.hamburger');
+        const navMenu = document.querySelector('.nav-menu');
+
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+    </script>
+</body>
+</html>
