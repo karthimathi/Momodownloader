@@ -1,1 +1,107 @@
+{# templates/title.html #}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Title Generator - Creator Toolkit Hub</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-icon">🎨</span>
+                <span class="logo-text">Creator Toolkit Hub</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="/">Home</a></li>
+                <li><a href="/downloader">Downloader</a></li>
+                <li><a href="/title" class="active">Title Generator</a></li>
+                <li><a href="/hashtag">Hashtag Generator</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
 
+    <main class="container">
+        <div class="tool-header">
+            <h1>🎯 Viral YouTube Title Generator</h1>
+            <p>Generate attention-grabbing titles that drive views</p>
+        </div>
+
+        <div class="form-container">
+            <form method="POST" action="/title" class="tool-form">
+                <div class="form-group">
+                    <label for="action">Action (Optional):</label>
+                    <input type="text" 
+                           id="action" 
+                           name="action" 
+                           placeholder="e.g., grow my channel, get more views"
+                           value="{{ action if action else '' }}">
+                </div>
+                <div class="form-group">
+                    <label for="topic">Topic (Optional):</label>
+                    <input type="text" 
+                           id="topic" 
+                           name="topic" 
+                           placeholder="e.g., YouTube, content creation"
+                           value="{{ topic if topic else '' }}">
+                </div>
+                <button type="submit" class="submit-button">Generate 5 Viral Titles →</button>
+            </form>
+        </div>
+
+        {% if titles %}
+        <div class="results-section">
+            <h2>🔥 Your Viral Titles</h2>
+            <div class="titles-list">
+                {% for title in titles %}
+                <div class="title-item">
+                    <div class="title-number">{{ loop.index }}</div>
+                    <div class="title-text">{{ title }}</div>
+                    <button class="copy-button" onclick="copyToClipboard('{{ title }}')">📋 Copy</button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="tips-section">
+            <h3>💡 Pro Tips for Viral Titles:</h3>
+            <ul>
+                <li>Use numbers and lists (e.g., "5 Ways to...")</li>
+                <li>Create curiosity gaps</li>
+                <li>Use power words (Amazing, Incredible, Shocking)</li>
+                <li>Include emojis for visual appeal</li>
+                <li>Keep titles under 70 characters for SEO</li>
+            </ul>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>Free Creator Tools | Made for content creators</p>
+        <p class="footer-note">© 2024 Creator Toolkit Hub - All tools are free to use</p>
+    </footer>
+
+    <script>
+        const hamburger = document.querySelector('.hamburger');
+        const navMenu = document.querySelector('.nav-menu');
+
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Title copied to clipboard!');
+            });
+        }
+    </script>
+</body>
+</html>
