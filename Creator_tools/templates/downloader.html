@@ -1,17 +1,104 @@
+{# templates/downloader.html #}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Downloader</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Downloader - Creator Toolkit Hub</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h2>Download Video</h2>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-icon">🎨</span>
+                <span class="logo-text">Creator Toolkit Hub</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="/">Home</a></li>
+                <li><a href="/downloader" class="active">Downloader</a></li>
+                <li><a href="/title">Title Generator</a></li>
+                <li><a href="/hashtag">Hashtag Generator</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
 
-    <form method="POST">
-        <input type="text" name="url" placeholder="Paste video link" required>
-        <button type="submit">Download</button>
-    </form>
+    <main class="container">
+        <div class="tool-header">
+            <h1>📥 Instagram & Facebook Video Downloader</h1>
+            <p>Download videos from Instagram and Facebook quickly and easily</p>
+            <div class="warning-note">⚠️ YouTube videos are not supported</div>
+        </div>
 
-    <br>
-    <a href="/">Back</a>
+        <div class="form-container">
+            <form method="POST" action="/downloader" class="tool-form">
+                <div class="form-group">
+                    <label for="url">Video URL:</label>
+                    <input type="url" 
+                           id="url" 
+                           name="url" 
+                           placeholder="https://www.instagram.com/p/... or https://www.facebook.com/..."
+                           required>
+                </div>
+                <button type="submit" class="submit-button">Download Video →</button>
+            </form>
+        </div>
+
+        {% if error %}
+        <div class="error-message">
+            <span class="error-icon">❌</span>
+            <p>{{ error }}</p>
+        </div>
+        {% endif %}
+
+        {% if video_info %}
+        <div class="result-card">
+            <h2>Video Ready for Download</h2>
+            <div class="video-preview">
+                {% if video_info.thumbnail %}
+                <img src="{{ video_info.thumbnail }}" alt="Video thumbnail" class="thumbnail">
+                {% endif %}
+                <div class="video-details">
+                    <h3>{{ video_info.title }}</h3>
+                    {% if video_info.duration %}
+                    <p>Duration: {{ video_info.duration }} seconds</p>
+                    {% endif %}
+                </div>
+            </div>
+            <a href="{{ video_info.url }}" class="download-button" download>Download Video</a>
+            <p class="download-note">Note: Right-click and select "Save link as" if download doesn't start automatically</p>
+        </div>
+        {% endif %}
+
+        <div class="tips-section">
+            <h3>💡 Tips:</h3>
+            <ul>
+                <li>Copy the video URL from Instagram or Facebook</li>
+                <li>Paste it in the input field above</li>
+                <li>Click download and save your video</li>
+                <li>Works with Instagram Reels, Posts, and Facebook Videos</li>
+            </ul>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>Free Creator Tools | Made for content creators</p>
+        <p class="footer-note">© 2024 Creator Toolkit Hub - All tools are free to use</p>
+    </footer>
+
+    <script>
+        const hamburger = document.querySelector('.hamburger');
+        const navMenu = document.querySelector('.nav-menu');
+
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+    </script>
 </body>
 </html>
