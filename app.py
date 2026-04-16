@@ -7,6 +7,8 @@ import os
 from dotenv import load_dotenv
 from io import BytesIO, StringIO
 import tempfile
+import requests
+from urllib.parse import urlparse
 
 # Load environment variables
 load_dotenv()
@@ -69,7 +71,7 @@ def is_allowed_platform(url):
     return False
 
 def download_video(url):
-    """Download video using yt-dlp and return info"""
+    """Get video info using yt-dlp and return direct download URL"""
     try:
         # Check if it's a YouTube URL
         if is_youtube_url(url):
@@ -97,15 +99,26 @@ def download_video(url):
                 if 'entries' in info:
                     info = info['entries'][0]
                 
+                # Try to get the best quality video URL
                 if 'url' in info:
                     video_url = info['url']
-                elif 'requested_formats' in info:
+                elif 'requested_formats' in info and info['requested_formats']:
                     video_url = info['requested_formats'][0]['url']
                 elif 'formats' in info:
+                    # Get the best quality video with both video and audio
                     for f in info['formats']:
                         if f.get('vcodec') != 'none' and f.get('acodec') != 'none':
                             video_url = f['url']
                             break
+                    # If no combined format, get best video only
+                    if not video_url:
+                        for f in info['formats']:
+                            if f.get('vcodec') != 'none':
+                                video_url = f['url']
+                                break
+                
+                if not video_url:
+                    return None, "Could not extract video URL. Please try another video."
                 
                 # Check file size (approximate)
                 if 'filesize' in info and info['filesize']:
@@ -113,8 +126,12 @@ def download_video(url):
                     if file_size_mb > MAX_VIDEO_SIZE:
                         return None, f"Video is too large ({file_size_mb:.1f}MB). Maximum size is {MAX_VIDEO_SIZE}MB."
                 
+                # Clean title for filename
+                safe_title = re.sub(r'[^\w\s-]', '', info.get('title', 'Video'))
+                safe_title = re.sub(r'[-\s]+', '-', safe_title)
+                
                 return {
-                    'title': info.get('title', 'Video'),
+                    'title': safe_title,
                     'url': video_url,
                     'thumbnail': info.get('thumbnail', ''),
                     'duration': info.get('duration', 0)
@@ -128,10 +145,12 @@ def download_video(url):
             return None, "This video is private or not accessible"
         elif "unavailable" in error_msg.lower():
             return None, "Video is unavailable"
+        elif "login" in error_msg.lower():
+            return None, "This video requires login. Please use a public video."
         elif "timeout" in error_msg.lower():
             return None, "Download timed out. Please try again."
         else:
-            return None, "Unable to download video. Please check the URL"
+            return None, f"Unable to download video: {error_msg[:100]}"
     except Exception as e:
         return None, f"An error occurred: {str(e)}"
 
@@ -202,6 +221,38 @@ def downloader():
             video_info, error = download_video(url)
     
     return render_template('downloader.html', video_info=video_info, error=error)
+
+@app.route('/direct-download', methods=['POST'])
+def direct_download():
+    """Direct endpoint to download video file"""
+    try:
+        data = request.get_json()
+        video_url = data.get('video_url')
+        video_title = data.get('video_title', 'video')
+        
+        if not video_url:
+            return jsonify({'error': 'No video URL provided'}), 400
+        
+        # Stream the video directly to the client
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        }
+        
+        response = requests.get(video_url, headers=headers, stream=True)
+        
+        if response.status_code == 200:
+            # Send the video file
+            return send_file(
+                BytesIO(response.content),
+                as_attachment=True,
+                download_name=f"{video_title}.mp4",
+                mimetype='video/mp4'
+            )
+        else:
+            return jsonify({'error': 'Failed to download video'}), 500
+            
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/title', methods=['GET', 'POST'])
 def title_generator():
