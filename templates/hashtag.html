@@ -1,3 +1,4 @@
+{# templates/hashtag.html - Updated with better UX #}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,8 +13,8 @@
     <nav class="navbar">
         <div class="nav-container">
             <div class="logo">
-                <div class="logo-icon">🎨</div>
-                <div class="logo-text">Creator Toolkit Hub</div>
+                <span class="logo-icon">🎨</span>
+                <span class="logo-text">Creator Toolkit Hub</span>
             </div>
             <ul class="nav-menu">
                 <li><a href="/">Home</a></li>
@@ -40,26 +41,18 @@
             <form method="POST" action="/hashtag" class="tool-form" id="hashtagForm">
                 <div class="form-group">
                     <label for="category">
-                        <i class="fas fa-tag"></i> Select Content Category
+                        <i class="fas fa-tag"></i> Category:
                     </label>
                     <select id="category" name="category">
-                        <option value="general" {% if category == 'general' %}selected{% endif %}>
-                            🌍 General - Viral & Trending
-                        </option>
-                        <option value="tech" {% if category == 'tech' %}selected{% endif %}>
-                            💻 Technology & Innovation
-                        </option>
-                        <option value="business" {% if category == 'business' %}selected{% endif %}>
-                            💼 Business & Success
-                        </option>
-                        <option value="lifestyle" {% if category == 'lifestyle' %}selected{% endif %}>
-                            🌟 Lifestyle & Motivation
-                        </option>
+                        <option value="general" {% if category == 'general' %}selected{% endif %}>🌍 General - Viral & Trending</option>
+                        <option value="tech" {% if category == 'tech' %}selected{% endif %}>💻 Technology & Innovation</option>
+                        <option value="business" {% if category == 'business' %}selected{% endif %}>💼 Business & Success</option>
+                        <option value="lifestyle" {% if category == 'lifestyle' %}selected{% endif %}>🌟 Lifestyle & Motivation</option>
                     </select>
                 </div>
                 <button type="submit" class="submit-button" id="generateBtn">
                     <span class="btn-normal">
-                        <i class="fas fa-magic"></i> Generate Hashtags
+                        <i class="fas fa-magic"></i> Generate 10 Hashtags
                     </span>
                     <span class="btn-loading" style="display: none;">
                         <i class="fas fa-spinner fa-spin"></i> Generating...
@@ -69,35 +62,30 @@
         </div>
 
         {% if hashtags %}
-        <div class="results-section glass-effect" id="resultsSection">
+        <div class="results-section glass-effect">
             <div class="results-header">
-                <h2>
-                    <i class="fas fa-chart-line"></i> 
-                    Generated Hashtags
-                </h2>
+                <h2><i class="fas fa-chart-line"></i> Trending Hashtags</h2>
                 <div class="results-actions">
                     <button class="action-btn copy-all-btn" id="copyAllBtn">
                         <i class="fas fa-copy"></i> Copy All
                     </button>
-                    <button class="action-btn download-btn" id="downloadBtn">
+                    <button class="action-btn download-hashtag-btn" id="downloadHashtagBtn">
                         <i class="fas fa-download"></i> Download .txt
                     </button>
                 </div>
             </div>
-            <div class="hashtags-grid" id="hashtagsGrid">
+            <div class="hashtags-grid">
                 {% for hashtag in hashtags %}
-                <div class="hashtag-card">
+                <div class="hashtag-item">
                     <span class="hashtag-text">{{ hashtag }}</span>
-                    <button class="copy-single-btn" data-hashtag="{{ hashtag }}">
-                        <i class="far fa-copy"></i>
-                        <span class="tooltip">Copy</span>
+                    <button class="copy-button" data-hashtag="{{ hashtag }}">
+                        <i class="far fa-copy"></i> Copy
                     </button>
                 </div>
                 {% endfor %}
             </div>
             <div class="stats-badge">
-                <i class="fas fa-chart-simple"></i> 
-                {{ hashtags|length }} trending hashtags generated
+                <i class="fas fa-chart-simple"></i> {{ hashtags|length }} trending hashtags generated
             </div>
         </div>
         {% endif %}
@@ -105,14 +93,14 @@
         <div class="tips-section">
             <div class="tips-header">
                 <i class="fas fa-lightbulb"></i>
-                <h3>Pro Tips for Maximum Engagement</h3>
+                <h3>Hashtag Strategy Tips:</h3>
             </div>
             <ul>
-                <li><i class="fas fa-chart-line"></i> Use 5-10 relevant hashtags per post for optimal reach</li>
+                <li><i class="fas fa-chart-line"></i> Use 5-10 relevant hashtags per post</li>
                 <li><i class="fas fa-mix"></i> Mix popular and niche-specific hashtags</li>
                 <li><i class="fas fa-trademark"></i> Create a branded hashtag for your content</li>
-                <li><i class="fas fa-search"></i> Research hashtags used by competitors in your niche</li>
-                <li><i class="fas fa-chart-simple"></i> Update hashtags based on current trends</li>
+                <li><i class="fas fa-search"></i> Research hashtags used by competitors</li>
+                <li><i class="fas fa-chart-simple"></i> Update hashtags based on trends</li>
                 <li><i class="fas fa-ban"></i> Avoid banned or overused hashtags</li>
             </ul>
         </div>
@@ -139,10 +127,12 @@
                 navMenu.classList.toggle('active');
             });
         }
-
+        
         // Toast notification system
         function showToast(message, type = 'success') {
             const container = document.getElementById('toastContainer');
+            if (!container) return;
+            
             const toast = document.createElement('div');
             toast.className = `toast toast-${type}`;
             
@@ -161,36 +151,32 @@
             
             container.appendChild(toast);
             
-            // Trigger animation
             setTimeout(() => toast.classList.add('show'), 10);
-            
-            // Remove after 3 seconds
             setTimeout(() => {
                 toast.classList.remove('show');
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
         }
-
+        
         // Copy single hashtag
         function copyToClipboard(text, button) {
             navigator.clipboard.writeText(text).then(() => {
-                // Add visual feedback
                 const originalHTML = button.innerHTML;
-                button.innerHTML = '<i class="fas fa-check"></i>';
-                button.classList.add('copied');
+                button.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                button.style.background = '#10b981';
                 showToast(`Copied: ${text}`, 'success');
                 
                 setTimeout(() => {
                     button.innerHTML = originalHTML;
-                    button.classList.remove('copied');
+                    button.style.background = '';
                 }, 1500);
             }).catch(() => {
-                showToast('Failed to copy. Please try again.', 'error');
+                showToast('Failed to copy', 'error');
             });
         }
-
+        
         // Copy all hashtags
-        async function copyAllHashtags() {
+        function copyAllHashtags() {
             const hashtags = Array.from(document.querySelectorAll('.hashtag-text'))
                 .map(el => el.textContent);
             
@@ -200,36 +186,32 @@
             }
             
             const allHashtags = hashtags.join(' ');
-            
-            try {
-                await navigator.clipboard.writeText(allHashtags);
+            navigator.clipboard.writeText(allHashtags).then(() => {
                 showToast(`Copied ${hashtags.length} hashtags to clipboard! 📋`, 'success');
                 
-                // Animate copy all button
                 const copyAllBtn = document.getElementById('copyAllBtn');
                 const originalText = copyAllBtn.innerHTML;
                 copyAllBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
                 setTimeout(() => {
                     copyAllBtn.innerHTML = originalText;
                 }, 2000);
-            } catch (err) {
+            }).catch(() => {
                 showToast('Failed to copy hashtags', 'error');
-            }
+            });
         }
-
+        
         // Download hashtags as .txt file
         async function downloadHashtags() {
             const hashtags = Array.from(document.querySelectorAll('.hashtag-text'))
                 .map(el => el.textContent);
             const category = document.getElementById('category').value;
-            const categoryName = document.querySelector(`#category option[value="${category}"]`).textContent;
             
             if (hashtags.length === 0) {
                 showToast('No hashtags to download', 'warning');
                 return;
             }
             
-            const downloadBtn = document.getElementById('downloadBtn');
+            const downloadBtn = document.getElementById('downloadHashtagBtn');
             const originalHTML = downloadBtn.innerHTML;
             downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Downloading...';
             downloadBtn.disabled = true;
@@ -248,12 +230,12 @@
                     const url = window.URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
-                    a.download = `hashtags_${category}_${new Date().getTime()}.txt`;
+                    a.download = `hashtags_${category}_${Date.now()}.txt`;
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
                     window.URL.revokeObjectURL(url);
-                    showToast(`Downloaded ${hashtags.length} hashtags successfully! 📥`, 'success');
+                    showToast(`Downloaded ${hashtags.length} hashtags! 📥`, 'success');
                 } else {
                     const error = await response.json();
                     showToast(error.error || 'Download failed', 'error');
@@ -265,7 +247,7 @@
                 downloadBtn.disabled = false;
             }
         }
-
+        
         // Form submission with loading animation
         const form = document.getElementById('hashtagForm');
         const generateBtn = document.getElementById('generateBtn');
@@ -273,7 +255,7 @@
         const btnLoading = generateBtn?.querySelector('.btn-loading');
         
         if (form) {
-            form.addEventListener('submit', function(e) {
+            form.addEventListener('submit', function() {
                 if (btnNormal && btnLoading) {
                     btnNormal.style.display = 'none';
                     btnLoading.style.display = 'inline-flex';
@@ -283,7 +265,7 @@
         }
         
         // Add event listeners for copy buttons
-        document.querySelectorAll('.copy-single-btn').forEach(btn => {
+        document.querySelectorAll('.copy-button').forEach(btn => {
             btn.addEventListener('click', () => {
                 const hashtag = btn.getAttribute('data-hashtag');
                 copyToClipboard(hashtag, btn);
@@ -297,25 +279,9 @@
         }
         
         // Add event listener for download button
-        const downloadBtn = document.getElementById('downloadBtn');
+        const downloadBtn = document.getElementById('downloadHashtagBtn');
         if (downloadBtn) {
             downloadBtn.addEventListener('click', downloadHashtags);
-        }
-        
-        // Add hover effect for hashtag cards
-        document.querySelectorAll('.hashtag-card').forEach(card => {
-            card.addEventListener('mouseenter', () => {
-                card.style.transform = 'translateY(-5px) scale(1.02)';
-            });
-            card.addEventListener('mouseleave', () => {
-                card.style.transform = 'translateY(0) scale(1)';
-            });
-        });
-        
-        // Animate results section on load
-        const resultsSection = document.getElementById('resultsSection');
-        if (resultsSection) {
-            resultsSection.style.animation = 'fadeInUp 0.6s ease';
         }
     </script>
 </body>
