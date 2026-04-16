@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Downloader - Creator Toolkit Hub</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-icon">🎨</span>
+                <span class="logo-text">Creator Toolkit Hub</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="/">Home</a></li>
+                <li><a href="/downloader" class="active">Downloader</a></li>
+                <li><a href="/title">Title Generator</a></li>
+                <li><a href="/hashtag">Hashtag Generator</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="tool-header">
+            <div class="header-badge">⚡ Fast & Free ⚡</div>
+            <h1>📥 Instagram & Facebook Video Downloader</h1>
+            <p>Download videos from Instagram and Facebook quickly and easily in HD quality</p>
+            <div class="warning-note">
+                <i class="fas fa-exclamation-triangle"></i> 
+                YouTube videos are not supported due to copyright restrictions
+            </div>
+        </div>
+
+        <div class="form-container glass-effect">
+            <form class="tool-form" id="downloadForm" method="POST" action="/downloader">
+                <div class="form-group">
+                    <label for="url">
+                        <i class="fas fa-link"></i> Video URL:
+                    </label>
+                    <input type="url" 
+                           id="url" 
+                           name="url" 
+                           placeholder="https://www.instagram.com/p/... or https://www.facebook.com/..."
+                           required
+                           value="{{ request.form.get('url', '') }}">
+                    <small>Supported: Instagram Reels, Posts, Facebook Videos, Facebook Watch</small>
+                </div>
+                <button type="submit" class="submit-button" id="submitBtn">
+                    <span class="btn-normal">
+                        <i class="fas fa-download"></i> Process Video
+                    </span>
+                    <span class="btn-loading" style="display: none;">
+                        <i class="fas fa-spinner fa-spin"></i> Processing...
+                    </span>
+                </button>
+            </form>
+            
+            <div class="platform-icons">
+                <div class="platform-icon"><i class="fab fa-instagram"></i> Instagram</div>
+                <div class="platform-icon"><i class="fab fa-facebook"></i> Facebook</div>
+                <div class="platform-icon"><i class="fas fa-video"></i> Reels</div>
+                <div class="platform-icon"><i class="fas fa-play-circle"></i> Watch</div>
+            </div>
+        </div>
+
+        <!-- Display Error if any -->
+        {% if error %}
+        <div class="error-message">
+            <i class="fas fa-exclamation-circle"></i>
+            <p>{{ error }}</p>
+        </div>
+        {% endif %}
+
+        <!-- Display Video Info and Download Button if video is ready -->
+        {% if video_info and video_info.url %}
+        <div class="result-card glass-effect" id="resultCard">
+            <h2><i class="fas fa-check-circle" style="color: #10b981;"></i> Video Ready to Download</h2>
+            <div class="video-preview">
+                {% if video_info.thumbnail %}
+                <img src="{{ video_info.thumbnail }}" alt="Video thumbnail" class="thumbnail" 
+                     onerror="this.src='https://via.placeholder.com/120x120?text=No+Thumbnail'">
+                {% else %}
+                <div class="thumbnail-placeholder">
+                    <i class="fas fa-video"></i>
+                </div>
+                {% endif %}
+                <div class="video-details">
+                    <h3>{{ video_info.title }}</h3>
+                    {% if video_info.duration %}
+                    <p><i class="far fa-clock"></i> Duration: {{ video_info.duration }} seconds</p>
+                    {% endif %}
+                    <button class="download-btn-real" id="realDownloadBtn" 
+                            data-video-url="{{ video_info.url }}" 
+                            data-video-title="{{ video_info.title }}">
+                        <i class="fas fa-download"></i> Download Video Now
+                    </button>
+                    <p class="download-note">
+                        <i class="fas fa-info-circle"></i> 
+                        Click the button above to save the video to your device
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="tips-section">
+            <div class="tips-header">
+                <i class="fas fa-lightbulb"></i>
+                <h3>Pro Tips:</h3>
+            </div>
+            <ul>
+                <li><i class="fas fa-copy"></i> Copy the video URL from Instagram or Facebook</li>
+                <li><i class="fas fa-paste"></i> Paste it in the input field above</li>
+                <li><i class="fas fa-download"></i> Click process and then download your video</li>
+                <li><i class="fas fa-mobile-alt"></i> Works with Instagram Reels, Posts, and Facebook Videos</li>
+                <li><i class="fas fa-database"></i> Maximum file size: 50MB</li>
+                <li><i class="fas fa-lock"></i> Private videos cannot be downloaded</li>
+            </ul>
+        </div>
+        
+        <div class="supported-platforms">
+            <h3><i class="fas fa-thumbs-up"></i> Supported Platforms:</h3>
+            <div class="platform-badges">
+                <span class="platform-badge"><i class="fab fa-instagram"></i> Instagram</span>
+                <span class="platform-badge"><i class="fab fa-facebook"></i> Facebook</span>
+                <span class="platform-badge"><i class="fab fa-instagram"></i> Instagram Reels</span>
+                <span class="platform-badge"><i class="fab fa-facebook"></i> Facebook Watch</span>
+                <span class="platform-badge"><i class="fas fa-image"></i> Instagram Posts</span>
+                <span class="platform-badge"><i class="fas fa-video"></i> Facebook Videos</span>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>Free Creator Tools | Made for content creators</p>
+            <p class="footer-note">© 2024 Creator Toolkit Hub - All tools are free to use</p>
+        </div>
+    </footer>
+
+    <!-- Toast Container for Notifications -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <style>
+        /* Additional styles for downloader */
+        .video-result-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.6s ease;
+        }
+        
+        .video-preview {
+            display: flex;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .thumbnail {
+            width: 180px;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .thumbnail-placeholder {
+            width: 180px;
+            height: 180px;
+            background: linear-gradient(135deg, #667eea20 0%, #764ba220 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .thumbnail-placeholder i {
+            font-size: 3rem;
+            color: #6366f1;
+        }
+        
+        .video-details {
+            flex: 1;
+        }
+        
+        .video-details h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #1e293b;
+        }
+        
+        .video-details p {
+            color: #64748b;
+            margin-bottom: 1rem;
+        }
+        
+        .download-btn-real {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .download-btn-real:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+        }
+        
+        .download-btn-real:active {
+            transform: translateY(0);
+        }
+        
+        .download-btn-real:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .error-message {
+            background: rgba(254, 226, 226, 0.95);
+            border-left: 4px solid #ef4444;
+            padding: 1rem;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .error-message i {
+            font-size: 1.5rem;
+            color: #ef4444;
+        }
+        
+        .error-message p {
+            color: #991b1b;
+            margin: 0;
+        }
+        
+        .download-note {
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .video-preview {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            
+            .thumbnail, .thumbnail-placeholder {
+                width: 100%;
+                max-width: 250px;
+                height: auto;
+            }
+            
+            .download-btn-real {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        /* Toast styles */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .toast {
+            min-width: 300px;
+            background: white;
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .toast.show {
+            transform: translateX(0);
+        }
+        
+        .toast-success {
+            border-left: 4px solid #10b981;
+        }
+        
+        .toast-error {
+            border-left: 4px solid #ef4444;
+        }
+        
+        .toast-warning {
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .toast-info {
+            border-left: 4px solid #6366f1;
+        }
+        
+        .toast-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            animation: progress 3s linear forwards;
+        }
+        
+        @keyframes progress {
+            from { width: 100%; }
+            to { width: 0%; }
+        }
+    </style>
+
+    <script>
+        // Mobile menu toggle
+        const hamburger = document.querySelector('.hamburger');
+        const navMenu = document.querySelector('.nav-menu');
+
+        if (hamburger && navMenu) {
+            hamburger.addEventListener('click', () => {
+                hamburger.classList.toggle('active');
+                navMenu.classList.toggle('active');
+            });
+        }
+        
+        // Toast notification system
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            
+            const icons = {
+                success: '✅',
+                error: '❌',
+                info: 'ℹ️',
+                warning: '⚠️'
+            };
+            
+            toast.innerHTML = `
+                <div class="toast-icon">${icons[type] || '✅'}</div>
+                <div class="toast-message">${message}</div>
+                <div class="toast-progress"></div>
+            `;
+            
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+        
+        // Function to download video using direct link
+        async function downloadVideo(videoUrl, videoTitle) {
+            if (!videoUrl) {
+                showToast('No video URL found', 'error');
+                return;
+            }
+            
+            const downloadBtn = document.getElementById('realDownloadBtn');
+            const originalText = downloadBtn.innerHTML;
+            
+            try {
+                // Show downloading state
+                downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Downloading...';
+                downloadBtn.disabled = true;
+                
+                showToast('Starting download... 📥', 'info');
+                
+                // Method 1: Try direct download using anchor tag
+                const link = document.createElement('a');
+                link.href = videoUrl;
+                link.download = `${videoTitle}.mp4`;
+                link.target = '_blank';
+                
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                showToast('Download started! Check your downloads folder 💾', 'success');
+                
+            } catch (error) {
+                console.error('Download error:', error);
+                showToast('Download failed. Please try again.', 'error');
+            } finally {
+                // Reset button after 2 seconds
+                setTimeout(() => {
+                    downloadBtn.innerHTML = originalText;
+                    downloadBtn.disabled = false;
+                }, 2000);
+            }
+        }
+        
+        // Alternative download method using fetch (if needed)
+        async function downloadVideoViaFetch(videoUrl, videoTitle) {
+            try {
+                showToast('Preparing download...', 'info');
+                
+                const response = await fetch(videoUrl);
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${videoTitle}.mp4`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                
+                showToast('Download completed! 💾', 'success');
+            } catch (error) {
+                showToast('Download failed. Try right-click and "Save link as"', 'error');
+            }
+        }
+        
+        // Handle form submission loading state
+        const form = document.getElementById('downloadForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const btnNormal = submitBtn?.querySelector('.btn-normal');
+        const btnLoading = submitBtn?.querySelector('.btn-loading');
+        
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const urlInput = document.getElementById('url');
+                if (!urlInput.value.trim()) {
+                    e.preventDefault();
+                    showToast('Please enter a video URL', 'warning');
+                    return;
+                }
+                
+                if (btnNormal && btnLoading) {
+                    btnNormal.style.display = 'none';
+                    btnLoading.style.display = 'inline-flex';
+                    submitBtn.disabled = true;
+                }
+            });
+        }
+        
+        // Add click event to download button if it exists
+        const downloadBtn = document.getElementById('realDownloadBtn');
+        if (downloadBtn) {
+            downloadBtn.addEventListener('click', function() {
+                const videoUrl = this.getAttribute('data-video-url');
+                const videoTitle = this.getAttribute('data-video-title');
+                downloadVideo(videoUrl, videoTitle);
+            });
+        }
+        
+        // Show error as toast if present
+        {% if error %}
+        document.addEventListener('DOMContentLoaded', function() {
+            showToast('{{ error }}', 'error');
+        });
+        {% endif %}
+        
+        // Show success message if video is ready
+        {% if video_info and video_info.url %}
+        document.addEventListener('DOMContentLoaded', function() {
+            showToast('Video processed successfully! Click download to save.', 'success');
+        });
+        {% endif %}
+        
+        // Animate result card on load
+        const resultCard = document.getElementById('resultCard');
+        if (resultCard) {
+            resultCard.style.animation = 'fadeInUp 0.6s ease';
+        }
+    </script>
+</body>
+</html>
